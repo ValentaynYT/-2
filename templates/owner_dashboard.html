@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель владельца</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: rgb(39,40,43);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding-top: 120px;
+        }
+
+        .top-menu {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            width: 100%;
+            padding: 25px;
+            background-color: rgb(22, 23, 39);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+            flex-wrap: wrap;
+        }
+
+        .top-menu a {
+            padding: 12px 25px;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            border-radius: 50px;
+            background: linear-gradient(0deg, rgba(93,113,245,1) 34%, rgba(76,81,255,1) 78%);
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            position: relative;
+            white-space: nowrap;
+        }
+
+        .top-menu a:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(93, 113, 245, 0.4);
+        }
+
+        .dashboard-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 1200px;
+            margin-bottom: 40px;
+            gap: 25px;
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .welcome-section {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(93,113,245,0.2) 0%, rgba(0,255,136,0.1) 100%);
+            border-radius: 12px;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        .welcome-section h1 {
+            color: #00ff88;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .dashboard-section {
+            width: 100%;
+            padding: 25px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .dashboard-section h2 {
+            margin-top: 0;
+            color: #00ff88;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dashboard-section p {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .dashboard-link {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 12px 25px;
+            background: rgba(93, 113, 245, 0.3);
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            border: 1px solid rgba(93, 113, 245, 0.5);
+        }
+
+        .dashboard-link:hover {
+            background: rgba(93, 113, 245, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #5d71f5;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .action-button {
+            padding: 12px 20px;
+            background: rgba(93, 113, 245, 0.3);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            border: 1px solid rgba(93, 113, 245, 0.5);
+        }
+
+        .action-button:hover {
+            background: rgba(93, 113, 245, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .action-button.primary {
+            background: rgba(0, 255, 136, 0.3);
+            border: 1px solid rgba(0, 255, 136, 0.5);
+        }
+
+        .action-button.primary:hover {
+            background: rgba(0, 255, 136, 0.6);
+        }
+
+        .requests-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .requests-table th, .requests-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .requests-table th {
+            background: rgba(93, 113, 245, 0.3);
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 14px;
+        }
+
+        .requests-table tr:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            text-align: center;
+            display: inline-block;
+        }
+
+        .status-new { background: rgba(93, 113, 245, 0.3); color: #5d71f5; }
+        .status-approved { background: rgba(0, 255, 136, 0.3); color: #00ff88; }
+        .status-rejected { background: rgba(255, 71, 87, 0.3); color: #ff4757; }
+
+        .notification-badge {
+            background: #ff4757;
+            color: white;
+            border-radius: 50%;
+            padding: 3px 8px;
+            font-size: 12px;
+            margin-left: 8px;
+            font-weight: bold;
+            min-width: 20px;
+            height: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-button {
+            position: absolute;
+            right: 50px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 12px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: linear-gradient(0deg, rgba(93,113,245,1) 34%, rgba(76,81,255,1) 78%);
+        }
+
+        .profile-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(93, 113, 245, 0.4);
+        }
+
+        .profile-modal {
+            display: none;
+            position: absolute;
+            right: 50px;
+            top: 75px;
+            background-color: white;
+            color: black;
+            width: 180px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            z-index: 1001;
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
+        }
+
+        .profile-modal a {
+            display: block;
+            padding: 15px 20px;
+            color: #333;
+            text-decoration: none;
+            text-align: left;
+            font-size: 14px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .profile-modal a:hover {
+            background-color: #f8f9fa;
+            color: #5d71f5;
+        }
+
+        .profile-modal a:last-child {
+            border-bottom: none;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding-top: 140px;
+            }
+
+            .top-menu {
+                padding: 15px;
+                gap: 10px;
+                justify-content: flex-start;
+                overflow-x: auto;
+            }
+
+            .top-menu a {
+                padding: 10px 15px;
+                font-size: 14px;
+                min-width: 140px;
+                justify-content: center;
+            }
+
+            .profile-button {
+                right: 20px;
+                position: fixed;
+                top: 15px;
+            }
+
+            .profile-modal {
+                right: 20px;
+                top: 70px;
+            }
+
+            .dashboard-container {
+                padding: 20px;
+                width: 95%;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .quick-actions {
+                flex-direction: column;
+            }
+
+            .requests-table {
+                font-size: 12px;
+            }
+
+            .requests-table th, .requests-table td {
+                padding: 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .top-menu a {
+                font-size: 12px;
+                padding: 8px 12px;
+                min-width: 120px;
+            }
+
+            .dashboard-section {
+                padding: 15px;
+            }
+
+            .welcome-section h1 {
+                font-size: 2em;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-menu">
+        <a href="{{ url_for('owner_products') }}">Общий список товаров</a>
+        <a href="{{ url_for('owner_requests') }}">
+            Заявки от заказчиков
+            {% if new_requests_count > 0 %}
+                <span class="notification-badge">{{ new_requests_count }}</span>
+            {% endif %}
+        </a>
+        <a href="{{ url_for('owner_dashboard') }}">Главная</a>
+        <!-- 👤 НОВАЯ КНОПКА В ВЕРХНЕМ МЕНЮ -->
+        <a href="{{ url_for('create_user') }}">Создание пользователей</a>
+        
+        <button class="profile-button" id="profile-button">👤</button>
+        <div class="profile-modal" id="profile-modal">
+            <a href="{{ url_for('logout') }}" style="color: #ff4757;">Выйти</a>
+        </div>
+    </div>
+
+    <div class="dashboard-container">
+        <!-- Приветствие -->
+        <div class="welcome-section">
+            <h1>Панель управления владельца ️</h1>
+            <p id="current-date">Сегодня: {{ current_date.strftime('%d.%m.%Y') if current_date else 'Дата не установлена' }}</p>
+        </div>
+
+        <!-- Общая статистика -->
+        <div class="dashboard-section">
+            <h2>📊 Общая статистика</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">{{ total_products }}</div>
+                    <div class="stat-label">Всего товаров</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">{{ new_requests_count }}</div>
+                    <div class="stat-label">Новых заявок</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">{{ approved_requests_count }}</div>
+                    <div class="stat-label">Одобрено заявок</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">{{ total_requests_count }}</div>
+                    <div class="stat-label">Всего заявок</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Управление товарами -->
+        <div class="dashboard-section">
+            <h2>📦 Управление товарами</h2>
+            <p>Общее количество товаров в системе: <strong>{{ total_products }}</strong></p>
+            <p>Последнее обновление базы данных: <strong>{{ last_deletion_time if last_deletion_time else 'Не выполнялось' }}</strong></p>
+
+            <div class="quick-actions">
+                <button class="action-button primary" onclick="window.location.href='{{ url_for('owner_products') }}'">
+                    Просмотреть все товары
+                </button>
+            </div>
+        </div>
+
+        <!-- Заявки от заказчиков -->
+        <div class="dashboard-section">
+            <h2>📋 Заявки от заказчиков</h2>
+            <p>Новых заявок, требующих внимания: <strong>{{ new_requests_count }}</strong></p>
+
+            {% if recent_requests %}
+            <div class="recent-requests">
+                <h3>Последние заявки:</h3>
+                <table class="requests-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Заказчик</th>
+                            <th>Тип</th>
+                            <th>Статус</th>
+                            <th>Дата</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in recent_requests %}
+                        <tr>
+                            <td>#{{ request.id }}</td>
+                            <td>{{ request.email }}</td>
+                            <td>
+                                {% if request.type == 'order' %}Заказ
+                                {% elif request.type == 'return' %}Возврат
+                                {% elif request.type == 'issue' %}Проблема
+                                {% else %}Другое{% endif %}
+                            </td>
+                            <td>
+                                <span class="status-badge
+                                    {% if request.status == 'new' or request.status == 'Новая' %}status-new
+                                    {% elif request.status == 'approved' or request.status == 'Одобрена' %}status-approved
+                                    {% elif request.status == 'rejected' or request.status == 'Отклонена' %}status-rejected
+                                    {% endif %}">
+                                    {% if request.status == 'new' or request.status == 'Новая' %}Новая
+                                    {% elif request.status == 'approved' or request.status == 'Одобрена' %}Одобрена
+                                    {% elif request.status == 'rejected' or request.status == 'Отклонена' %}Отклонена
+                                    {% else %}{{ request.status }}{% endif %}
+                                </span>
+                            </td>
+                            <td>{{ request.created_at.strftime('%d.%m.%Y %H:%M') if request.created_at else 'Не указана' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+
+            <div class="quick-actions">
+                <button class="action-button primary" onclick="window.location.href='{{ url_for('owner_requests') }}'">
+                    Управление заявками
+                </button>
+            </div>
+        </div>
+
+        <!-- Быстрые действия -->
+        <div class="dashboard-section">
+            <h2>⚡ Быстрые действия</h2>
+            <div class="quick-actions">
+                <button class="action-button" onclick="window.location.href='{{ url_for('owner_products') }}'">
+                    📦 Управление товарами
+                </button>
+                <button class="action-button" onclick="window.location.href='{{ url_for('owner_requests') }}'">
+                    📋 Заявки заказчиков
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Управление модальным окном профиля
+            const profileButton = document.getElementById('profile-button');
+            const profileModal = document.getElementById('profile-modal');
+
+            profileButton.addEventListener('click', function(event) {
+                event.stopPropagation();
+                profileModal.style.display = profileModal.style.display === 'block' ? 'none' : 'block';
+            });
+
+            document.addEventListener('click', function(event) {
+                if (!profileButton.contains(event.target) && !profileModal.contains(event.target)) {
+                    profileModal.style.display = 'none';
+                }
+            });
+
+            // Обновление текущей даты
+            updateCurrentDate();
+        });
+
+        function updateCurrentDate() {
+            const now = new Date();
+            const options = {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                weekday: 'long'
+            };
+            const dateElement = document.getElementById('current-date');
+            if (dateElement && dateElement.textContent.includes('Дата не установлена')) {
+                dateElement.textContent = 'Сегодня: ' + now.toLocaleDateString('ru-RU', options);
+            }
+        }
+
+        // Обновление времени каждую минуту
+        setInterval(updateCurrentDate, 60000);
+    </script>
+</body>
+</html>

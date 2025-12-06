@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <link href="{{ url_for('static', filename='png/registericon.png') }}" rel="shortcut icon">
+    <title>Вход</title>
+    <style>
+        .input-field {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .input-field select {
+            width: 100%;
+            padding: 10px 0;
+            border: none;
+            border-bottom: 1px solid #ccc;
+            background: transparent;
+            color: inherit;
+            outline: none;
+            font-size: 16px;
+            appearance: none;
+        }
+
+        .input-field select:focus {
+            border-bottom: 1.5px solid #007bff;
+        }
+
+        .input-field select option {
+            color: #333;
+        }
+
+        .input-field::after {
+            content: "▼";
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: #999;
+            font-size: 12px;
+        }
+
+        .input-field label {
+            position: absolute;
+            left: 0;
+            top: 10px;
+            pointer-events: none;
+            transition: 0.3s;
+        }
+
+        .input-field select:focus + label,
+        .input-field select:valid + label {
+            top: -20px;
+            font-size: 14px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <form method="POST" action="{{ url_for('login') }}">
+            <h2>Вход</h2>
+
+            <!-- Поле для домена компании -->
+            <div class="input-field">
+                <input type="text" name="domain" required pattern="[a-zA-Z0-9-]+"
+                       title="Только латинские буквы, цифры и дефисы">
+                <label>Домен компании</label>
+            </div>
+
+            <div class="input-field">
+                <input type="email" name="email" required>
+                <label>Введите свой email</label>
+            </div>
+            <div class="input-field">
+                <input type="password" name="password" required>
+                <label>Введите свой пароль</label>
+            </div>
+
+            <!-- Выбор роли -->
+            <div class="input-field">
+                <select name="role" required>
+                    <option value="" disabled selected></option>
+                    <option value="owner">Владелец</option>
+                    <option value="worker">Рабочий</option>
+                    <option value="customer">Заказчик</option>
+                </select>
+                <label>Выберите роль</label>
+            </div>
+
+            <div class="forget">
+                <label for="remember">
+                    <input type="checkbox" id="remember" name="remember">
+                    <p>Запомнить меня</p>
+                </label>
+            </div>
+            <button type="submit" class="submit">Войти</button>
+            <div class="register">
+                <p><a href="{{ url_for('register') }}">У вас нет аккаунта?</a></p>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
